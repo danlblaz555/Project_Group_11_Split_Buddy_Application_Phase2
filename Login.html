@@ -1,32 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Login</title>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e7f4fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #004080;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, button {
+            width: calc(100% - 20px);
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .cancelbtn {
+            background-color: #f44336;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .cancelbtn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
 </head>
 <body>
-<form id="loginForm">
-	<header>
-		<h1>Login</h1>		
-	</header>
-<link rel="stylesheet" type="text/css" href="Loginstyle.css" />
-  <div class="container">
-    <label for="uname"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="uname" required>
+    <form id="loginForm">
+        <div class="container">
+            <h1>Login</h1>
 
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required>
+            <label for="uname"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" name="uname" required>
 
-    <button type="submit"><a href="index.html">Login</a></button>
-    <label>
-      <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label>
-  </div>
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="psw" required>
 
-  <div class="container" style="background-color:#f1f1f1">
-    <button type="button" class="cancelbtn" onclick="document.location='index.html'">Cancel</button>
-    <span class="psw">Forgot <a href="#">password?</a></span>
-  </div>
-</form>
-<script src="app.js"></script>
+            <button type="submit">Login</button>
+            <label>
+                <input type="checkbox" checked="checked" name="remember"> Remember me
+            </label>
+        </div>
+
+        <div class="container" style="background-color:#f1f1f1">
+            <button type="button" class="cancelbtn" onclick="document.location='index.html'">Cancel</button>
+            <span class="psw">Forgot <a href="#">password?</a></span>
+        </div>
+    </form>
+    <script src="app.js"></script>
 </body>
 </html>
