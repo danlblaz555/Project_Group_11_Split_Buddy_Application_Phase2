@@ -1,0 +1,36 @@
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e7f4fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #004080;
+        }
+
+        p {
+            color: #333;
+        }
+
+        a {
+            color: dodgerblue;
+            font-size: 18px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
