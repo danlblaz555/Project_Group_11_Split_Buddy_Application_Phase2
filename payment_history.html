@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment History</title>
+    <link rel="stylesheet" type="text/css" href="payment_history.css" />
+</head>
+<body>
+    <a href="homepage.html" class="home-button">Return to Home</a>
+
+    <div class="container">
+        <h1>Payment History</h1>
+        <h2>Group Payments</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Group Name</th>
+                    <th>Category</th>
+                    <th>Total Expense</th>
+                    <th>Paid By</th>
+                    <th>Shares</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="groupPaymentsTable">
+                <!-- Group payment records will be dynamically added here -->
+            </tbody>
+        </table>
+
+        <h2>Outstanding Balances</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Group Name</th>
+                    <th>Member</th>
+                    <th>Balance Owed</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="outstandingBalancesTable">
+                <!-- Outstanding balances will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            const groupPaymentsTable = document.getElementById('groupPaymentsTable');
+            const outstandingBalancesTable = document.getElementById('outstandingBalancesTable');
+
+            // Simulated data, replace with actual data from backend or localStorage
+            const groupPayments = JSON.parse(localStorage.getItem('groupPayments')) || [];
+            const outstandingBalances = JSON.parse(localStorage.getItem('outstandingBalances')) || [];
+
+            if (loggedInUser) {
+                // Filter group payments and outstanding balances for the logged-in user
+                const userPayments = groupPayments.filter(payment =>
+                    payment.participants.includes(loggedInUser)
+                );
+                const userOutstandingBalances = outstandingBalances.filter(balance =>
+                    balance.member === loggedInUser
+                );
+
+                // Populate group payments table
+                userPayments.forEach(payment => {
+                    const row = `
+                        <tr>
+                            <td>${loggedInUser}</td>
+                            <td>${payment.groupName}</td>
+                            <td>${payment.category}</td>
+                            <td>$${payment.totalExpense}</td>
+                            <td>${payment.paidBy}</td>
+                            <td>${payment.shares}</td>
+                            <td>${payment.date}</td>
+                        </tr>
+                    `;
+                    groupPaymentsTable.insertAdjacentHTML('beforeend', row);
+                });
+
+                // Populate outstanding balances table
+                userOutstandingBalances.forEach((balance, index) => {
+                    const row = `
+                        <tr>
+                            <td>${balance.groupName}</td>
+                            <td>${balance.member}</td>
+                            <td>${balance.balanceOwed}</td>
+                            <td id="status-${index}">${balance.status}</td>
+                            <td>
+                                <button class="btn btn-update" data-index="${index}">Mark as Paid</button>
+                            </td>
+                        </tr>
+                    `;
+                    outstandingBalancesTable.insertAdjacentHTML('beforeend', row);
+                });
+
+                // Add event listeners to update buttons
+                document.querySelectorAll('.btn-update').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        const statusCell = document.getElementById(`status-${index}`);
+
+                        // Update status in the table
+                        statusCell.textContent = 'Paid';
+
+                        // Update status in localStorage
+                        userOutstandingBalances[index].status = 'Paid';
+                        localStorage.setItem('outstandingBalances', JSON.stringify(outstandingBalances));
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

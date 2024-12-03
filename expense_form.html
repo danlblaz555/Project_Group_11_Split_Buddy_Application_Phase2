@@ -2,97 +2,19 @@
 <html>
 <head>
     <title>Expense Submission</title>
-    <link rel="stylesheet" type="text/css" href="signup.css" />
-    <style>
-        /* General Styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #e7f4fc; /* Light blue background */
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #ffffff; /* White container background */
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        h1, h2 {
-            text-align: center;
-            color: #004080; /* Dark blue headings */
-        }
-
-        label {
-            font-weight: bold;
-            color: #333333; /* Slightly darker text */
-        }
-
-        input, select, textarea, button {
-            width: calc(100% - 20px);
-            margin: 10px 0;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #007bff; /* Blue button */
-            color: #ffffff;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #004080; /* Dark blue header */
-            color: #ffffff; /* White text for header */
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f9ff; /* Light shade for even rows */
-        }
-
-        tr:nth-child(odd) {
-            background-color: #ffffff; /* White for odd rows */
-        }
-
-        tr:hover {
-            background-color: #e0f3ff; /* Light hover effect */
-        }
-
-        textarea {
-            resize: vertical;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="expense_form.css" />
 </head>
 <body>
+    <a href="homepage.html" class="home-button">Return to Home</a>
+
     <div class="container">
         <h1>Expense Submission</h1>
         <p>Please fill out the form below to submit an expense.</p>
 
-        <!-- Expense Submission Form -->
         <form id="expenseForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
             <label for="category">Category:</label>
             <select id="category" name="category" required>
                 <option value="travel">Travel</option>
@@ -101,79 +23,87 @@
             </select>
 
             <label for="totalCost">Total Cost:</label>
-            <input type="number" id="totalCost" name="totalCost" placeholder="Enter total cost" required>
+            <input type="number" id="totalCost" name="totalCost" required>
 
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date" required>
+            <label for="splitMethod">Split Method:</label>
+            <select id="splitMethod" name="splitMethod" required>
+                <option value="equal">Equal</option>
+                <option value="unequal">Unequal Shares</option>
+                <option value="percentage">Percentage-based</option>
+            </select>
 
-            <label for="description">Description:</label>
-            <textarea id="description" name="description" placeholder="Enter a brief description" rows="4" required></textarea>
+            <label for="participants">Participants (comma-separated):</label>
+            <input type="text" id="participants" name="participants" required>
 
-            <label for="participants">Participants:</label>
-            <input type="text" id="participants" name="participants" placeholder="Enter participants (comma-separated)" required>
+            <!-- Additional Shares Input -->
+            <div id="sharesContainer" class="hidden">
+                <label for="shares">Enter Shares (comma-separated):</label>
+                <input type="text" id="shares" name="shares" placeholder="e.g. 40,30,30 for percentages or 50,30,20 for amounts">
+            </div>
 
             <button type="submit">Submit Expense</button>
         </form>
     </div>
-
-    <!-- Display Submitted Expenses -->
     <div class="container">
-        <h2>Submitted Expenses</h2>
-        <table id="expensesTable" border="1">
+        <h2>Expense Records</h2>
+        <table id="expenseTable">
             <thead>
                 <tr>
+                    <th>Username</th>
                     <th>Category</th>
                     <th>Total Cost</th>
-                    <th>Date</th>
-                    <th>Description</th>
+                    <th>Split Method</th>
                     <th>Participants</th>
-                    <th>Average Cost Per Participant</th>
+                    <th>Shares</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Expenses will be dynamically added here -->
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const expenseForm = document.getElementById('expenseForm');
-            const expensesTable = document.getElementById('expensesTable').querySelector('tbody');
+            const splitMethodSelect = document.getElementById('splitMethod');
+            const sharesContainer = document.getElementById('sharesContainer');
 
-            // Handle expense submission
+            // Show/hide the shares input field based on the selected split method
+            splitMethodSelect.addEventListener('change', () => {
+                if (splitMethodSelect.value === 'unequal' || splitMethodSelect.value === 'percentage') {
+                    sharesContainer.classList.remove('hidden');
+                } else {
+                    sharesContainer.classList.add('hidden');
+                }
+            });
+
+            const expenseForm = document.getElementById('expenseForm');
+            const expenseTable = document.getElementById('expenseTable').querySelector('tbody');
+
             expenseForm.addEventListener('submit', (event) => {
                 event.preventDefault();
 
-                // Get form values
+                const username = document.getElementById('username').value;
                 const category = document.getElementById('category').value;
-                const totalCost = parseFloat(document.getElementById('totalCost').value);
-                const date = document.getElementById('date').value;
-                const description = document.getElementById('description').value;
-                const participantsInput = document.getElementById('participants').value;
+                const totalCost = document.getElementById('totalCost').value;
+                const splitMethod = splitMethodSelect.value;
+                const participants = document.getElementById('participants').value;
+                const shares = document.getElementById('shares').value || 'N/A';
 
-                // Split participants into an array
-                const participants = participantsInput.split(',').map(name => name.trim());
+                // Save the username in localStorage for future reference
+                localStorage.setItem('loggedInUser', username);
 
-                // Calculate the average cost per participant
-                const averageCost = totalCost / participants.length;
-
-                // Create a new table row
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${category}</td>
-                    <td>${totalCost.toFixed(2)}</td>
-                    <td>${date}</td>
-                    <td>${description}</td>
-                    <td>${participants.join(', ')}</td>
-                    <td>${averageCost.toFixed(2)}</td>
+                const row = `
+                    <tr>
+                        <td>${username}</td>
+                        <td>${category}</td>
+                        <td>${totalCost}</td>
+                        <td>${splitMethod}</td>
+                        <td>${participants}</td>
+                        <td>${shares}</td>
+                    </tr>
                 `;
 
-                // Add the row to the table
-                expensesTable.appendChild(row);
-
-                // Reset the form
+                expenseTable.insertAdjacentHTML('beforeend', row);
                 expenseForm.reset();
+                sharesContainer.classList.add('hidden');
             });
         });
     </script>

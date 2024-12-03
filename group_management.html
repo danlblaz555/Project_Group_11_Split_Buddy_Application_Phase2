@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Groups</title>
+    <link rel="stylesheet" type="text/css" href="group_management.css" />
+</head>
+<body>
+    <a href="homepage.html" class="home-button">Return to Home</a>
+
+    <div class="container">
+        <h1>Group Management</h1>
+        <form id="groupForm">
+            <div>
+                <label for="groupName">Group Name:</label>
+                <input type="text" id="groupName" name="groupName" required>
+            </div>
+            <div>
+                <label for="groupMembers">Group Members (comma-separated):</label>
+                <input type="text" id="groupMembers" name="groupMembers" required>
+            </div>
+            <div>
+                <button type="submit">Create Group</button>
+            </div>
+        </form>
+        <h2>Existing Groups</h2>
+        <ul id="groupList"></ul>
+    </div>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const groupForm = document.getElementById('groupForm');
+            const groupList = document.getElementById('groupList');
+
+            // Load existing groups from localStorage
+            let groups = JSON.parse(localStorage.getItem('groups')) || [];
+
+            // Function to update group list display
+            function updateGroupList() {
+                groupList.innerHTML = '';
+                groups.forEach((group, index) => {
+                    const groupItem = document.createElement('li');
+                    groupItem.classList.add('group-list-item');
+
+                    // Group Name
+                    groupItem.innerHTML = `
+                        <span><strong>${group.groupName}</strong>: ${group.members.join(', ')}</span>
+                        <div>
+                            <button class="addMemberBtn" data-index="${index}">Add Member</button>
+                            <button class="removeGroupBtn" data-index="${index}">Delete Group</button>
+                        </div>
+                    `;
+
+                    // Add functionality for Add Member
+                    groupItem.querySelector('.addMemberBtn').addEventListener('click', () => {
+                        const memberToAdd = prompt("Enter member's name to add:");
+                        if (memberToAdd && !group.members.includes(memberToAdd)) {
+                            group.members.push(memberToAdd);
+                            localStorage.setItem('groups', JSON.stringify(groups));
+                            updateGroupList();
+                        } else {
+                            alert('Invalid name or member already exists.');
+                        }
+                    });
+
+                    // Add functionality for Delete Group
+                    groupItem.querySelector('.removeGroupBtn').addEventListener('click', () => {
+                        if (confirm(`Are you sure you want to delete the group "${group.groupName}"?`)) {
+                            groups.splice(index, 1);
+                            localStorage.setItem('groups', JSON.stringify(groups));
+                            updateGroupList();
+                        }
+                    });
+
+                    groupList.appendChild(groupItem);
+                });
+            }
+
+            // Create new group
+            groupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const groupName = document.getElementById('groupName').value;
+                const groupMembers = document.getElementById('groupMembers').value.split(',').map(member => member.trim());
+
+                // Check if the group already exists
+                if (groups.find(group => group.groupName === groupName)) {
+                    alert('You created a group!');
+                    return;
+                }
+
+                // Add new group to groups array
+                groups.push({ groupName, members: groupMembers });
+                localStorage.setItem('groups', JSON.stringify(groups));
+                updateGroupList();
+
+                // Reset form
+                groupForm.reset();
+            });
+
+            // Initialize group list display
+            updateGroupList();
+        });
+    </script>
+</body>
+</html>
