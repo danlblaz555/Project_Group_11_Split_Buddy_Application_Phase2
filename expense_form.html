@@ -35,6 +35,9 @@
             <label for="participants">Participants (comma-separated):</label>
             <input type="text" id="participants" name="participants" required>
 
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+
             <!-- Additional Shares Input -->
             <div id="sharesContainer" class="hidden">
                 <label for="shares">Enter Shares (comma-separated):</label>
@@ -55,6 +58,7 @@
                     <th>Split Method</th>
                     <th>Participants</th>
                     <th>Shares</th>
+                    <th>Date</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -64,6 +68,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const splitMethodSelect = document.getElementById('splitMethod');
             const sharesContainer = document.getElementById('sharesContainer');
+            const expenseForm = document.getElementById('expenseForm');
+            const expenseTable = document.getElementById('expenseTable').querySelector('tbody');
 
             // Show/hide the shares input field based on the selected split method
             splitMethodSelect.addEventListener('change', () => {
@@ -74,34 +80,38 @@
                 }
             });
 
-            const expenseForm = document.getElementById('expenseForm');
-            const expenseTable = document.getElementById('expenseTable').querySelector('tbody');
-
             expenseForm.addEventListener('submit', (event) => {
                 event.preventDefault();
 
                 const username = document.getElementById('username').value;
                 const category = document.getElementById('category').value;
-                const totalCost = document.getElementById('totalCost').value;
+                const totalCost = parseFloat(document.getElementById('totalCost').value);
                 const splitMethod = splitMethodSelect.value;
-                const participants = document.getElementById('participants').value;
-                const shares = document.getElementById('shares').value || 'N/A';
+                const participants = document.getElementById('participants').value.split(',').map(p => p.trim());
+                const date = document.getElementById('date').value;
+                let shares = document.getElementById('shares').value || '';
 
-                // Save the username in localStorage for future reference
-                localStorage.setItem('loggedInUser', username);
+                // Handle the case for equal split method
+                if (splitMethod === 'equal' && shares === '') {
+                    shares = (totalCost / participants.length).toFixed(2);
+                }
 
-                const row = `
-                    <tr>
-                        <td>${username}</td>
-                        <td>${category}</td>
-                        <td>${totalCost}</td>
-                        <td>${splitMethod}</td>
-                        <td>${participants}</td>
-                        <td>${shares}</td>
-                    </tr>
+                // Create a row for the expense data
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${username}</td>
+                    <td>${category}</td>
+                    <td>${totalCost.toFixed(2)}</td>
+                    <td>${splitMethod}</td>
+                    <td>${participants.join(', ')}</td>
+                    <td>${splitMethod === 'equal' ? `$${shares}` : shares}</td>
+                    <td>${date}</td>
                 `;
 
-                expenseTable.insertAdjacentHTML('beforeend', row);
+                // Add the new row to the table
+                expenseTable.appendChild(row);
+
+                // Reset the form after submission
                 expenseForm.reset();
                 sharesContainer.classList.add('hidden');
             });
